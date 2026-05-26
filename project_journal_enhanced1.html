@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>project journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#e8e4d8;
+  --ink2:#c8c4b8;
+  --ink3:#909080;
+  --paper:#141410;
+  --paper2:#1e1e18;
+  --paper3:#272720;
+  --line:#2e2e26;
+  --rule:#242420;
+  --green:#7ec850;
+  --green-bg:#1a2e10;
+  --green-mid:#5a9a30;
+  --green-dim:#2a3a1a;
+  --amber:#d4900a;
+  --amber-bg:#2a1e04;
+  --blue:#5a9ee0;
+  --blue-bg:#0a1e34;
+  --red:#e05050;
+  --red-bg:#2a0a0a;
+  --purple:#9a84e8;
+  --purple-bg:#1a1430;
+  --coral:#e07040;
+  --coral-bg:#2a1008;
+  --accent:#7ec850;
+  --w:960px;
+  --font-hand:'Ubuntu',sans-serif;
+  --font-mono:'Ubuntu Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-hand);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:2rem 1rem 5rem;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SIDE DECORATIONS
+═══════════════════════════════════════════ */
+.side-deco{
+  position:fixed;
+  top:0;
+  bottom:0;
+  width:calc((100vw - var(--w)) / 2 - 12px);
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.side-deco.left{ left:0; }
+.side-deco.right{ right:0; }
+
+.side-deco svg{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+}
+
+/* Floating labels on sides */
+.side-label{
+  position:fixed;
+  font-family:var(--font-mono);
+  font-size:0.7rem;
+  color:var(--ink3);
+  letter-spacing:0.15em;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  pointer-events:none;
+  z-index:1;
+  opacity:0.5;
+}
+.side-label.left{ left:14px; top:50%; transform:translateY(-50%) rotate(180deg); }
+.side-label.right{ right:14px; top:50%; transform:translateY(-50%); }
+
+/* Dot matrix corner pieces */
+.corner-dots{
+  position:fixed;
+  width:80px;
+  height:80px;
+  pointer-events:none;
+  z-index:1;
+}
+.corner-dots.tl{ top:20px; left:20px; }
+.corner-dots.tr{ top:20px; right:20px; }
+.corner-dots.bl{ bottom:20px; left:20px; }
+.corner-dots.br{ bottom:20px; right:20px; }
+
+/* Vertical rule lines on sides */
+.v-rule{
+  position:fixed;
+  top:0;bottom:0;
+  width:1px;
+  background:linear-gradient(to bottom, transparent 0%, var(--line) 15%, var(--line) 85%, transparent 100%);
+  pointer-events:none;
+  z-index:1;
+}
+.v-rule.left{ left:calc((100vw - var(--w)) / 2 - 30px); }
+.v-rule.right{ right:calc((100vw - var(--w)) / 2 - 30px); }
+
+/* Tick marks along v-rule */
+.tick-marks{
+  position:fixed;
+  top:0;bottom:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-evenly;
+  pointer-events:none;
+  z-index:1;
+}
+.tick-marks.left{ left:calc((100vw - var(--w)) / 2 - 40px); align-items:flex-end; }
+.tick-marks.right{ right:calc((100vw - var(--w)) / 2 - 40px); align-items:flex-start; }
+.tick{
+  width:8px; height:1px;
+  background:var(--ink3);
+  opacity:0.35;
+}
+.tick.long{ width:14px; }
+.tick-num{
+  font-family:var(--font-mono);
+  font-size:0.6rem;
+  color:var(--ink3);
+  opacity:0.3;
+  line-height:1;
+  margin-top:2px;
+}
+
+/* Floating icons / glyphs on sides */
+.glyph{
+  position:fixed;
+  font-family:var(--font-mono);
+  font-size:0.75rem;
+  color:var(--accent);
+  opacity:0.18;
+  pointer-events:none;
+  z-index:1;
+  letter-spacing:0.05em;
+}
+
+/* Mini bar chart decoration */
+.side-bars{
+  position:fixed;
+  bottom:180px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  pointer-events:none;
+  z-index:1;
+  align-items:flex-end;
+}
+.side-bars.left{ left:calc((100vw - var(--w)) / 2 - 55px); align-items:flex-end; }
+.side-bars.right{ right:calc((100vw - var(--w)) / 2 - 55px); align-items:flex-start; }
+.sbar{
+  height:3px;
+  border-radius:2px;
+  background:var(--accent);
+  opacity:0.2;
+}
+
+/* Progress arc */
+.side-arc{
+  position:fixed;
+  top:120px;
+  pointer-events:none;
+  z-index:1;
+}
+.side-arc.left{ left:calc((100vw - var(--w)) / 2 - 65px); }
+.side-arc.right{ right:calc((100vw - var(--w)) / 2 - 65px); }
+
+/* ═══════════════════════════════════════════
+   NOTEBOOK / MAIN LAYOUT
+═══════════════════════════════════════════ */
+.notebook{width:var(--w);max-width:100%;position:relative;z-index:2}
+.page{position:relative;z-index:1}
+
+/* header */
+.header{padding:1.75rem 0 1rem;border-bottom:1px solid var(--line);margin-bottom:1.5rem}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+.header h1{font-size:2.8rem;font-weight:700;color:var(--ink);letter-spacing:-0.5px}
+.header-date{font-family:var(--font-mono);font-size:0.9rem;color:var(--ink3);font-style:italic}
+.header-sub{font-size:1.15rem;color:var(--ink3)}
+
+/* stats */
+.stats{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--paper2)}
+.stat{flex:1;padding:16px 12px;border-right:1px solid var(--line);text-align:center}
+.stat:last-child{border-right:none}
+.stat-v{font-size:2.1rem;font-weight:700;color:var(--ink);line-height:1}
+.stat-l{font-size:0.82rem;color:var(--ink3);margin-top:5px;font-family:var(--font-mono)}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.ftag{font-family:var(--font-hand);font-size:1.05rem;padding:6px 18px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s}
+.ftag:hover{background:var(--paper3);color:var(--ink)}
+.ftag.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* add btn */
+.add-btn{width:100%;font-family:var(--font-hand);font-size:1.2rem;padding:14px;border:1.5px dashed var(--line);border-radius:8px;background:transparent;color:var(--ink3);cursor:pointer;margin-bottom:1.5rem;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.add-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--green-bg)}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cards{grid-template-columns:1fr}}
+.card{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:18px 20px;position:relative;transition:border-color .15s}
+.card:hover{border-color:#3e3e36}
+.card.pinned{border-left:3px solid var(--accent)}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.card-name{font-size:1.7rem;font-weight:700;color:var(--ink);line-height:1.2;display:flex;align-items:center;gap:7px}
+.badge-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;flex-shrink:0;padding-top:4px}
+
+.badge{font-family:var(--font-mono);font-size:0.75rem;padding:4px 10px;border-radius:99px;letter-spacing:0.03em}
+.b-active{background:var(--green-bg);color:var(--green);border:1px solid var(--green-dim)}
+.b-paused{background:var(--amber-bg);color:var(--amber);border:1px solid #4a3008}
+.b-idle{background:var(--paper3);color:var(--ink3);border:1px solid var(--line)}
+
+.tag-pill{font-family:var(--font-mono);font-size:0.75rem;padding:4px 10px;border-radius:99px}
+.t-work{background:var(--blue-bg);color:var(--blue);border:1px solid #1a3a5a}
+.t-personal{background:var(--amber-bg);color:var(--amber);border:1px solid #4a3008}
+.t-freelance{background:var(--purple-bg);color:var(--purple);border:1px solid #2a2050}
+.t-other{background:var(--paper3);color:var(--ink3);border:1px solid var(--line)}
+
+.card-desc{font-size:1.1rem;color:var(--ink2);margin-bottom:12px;line-height:1.5}
+
+.meta{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.mi{font-size:0.95rem;color:var(--ink3);display:flex;align-items:center;gap:7px}
+.mi a{color:var(--blue);text-decoration:none}
+.mi a:hover{text-decoration:underline}
+
+/* note */
+.note-area{background:var(--paper3);border:1px dashed #3a3a30;border-radius:6px;padding:10px 14px;font-family:var(--font-hand);font-size:1.1rem;color:var(--ink2);min-height:42px;cursor:pointer;line-height:1.5;margin-bottom:14px;transition:border-color .15s}
+.note-area:hover{border-color:#5a5a48}
+.note-area.empty{color:var(--ink3);font-style:italic}
+.note-area textarea{width:100%;background:transparent;border:none;outline:none;resize:none;font-family:var(--font-hand);font-size:1.1rem;color:var(--ink);line-height:1.5}
+
+/* timers */
+.timer-block{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.timer-row{display:flex;justify-content:space-between;align-items:center}
+.t-label{font-size:0.95rem;color:var(--ink3)}
+.t-val{font-family:var(--font-mono);font-size:1.05rem;color:var(--ink)}
+.t-val.live{color:var(--green);font-weight:400}
+.reset-note{font-size:0.85rem;color:var(--ink3);font-style:italic}
+
+/* 7-day mini */
+.mini-streak{display:flex;gap:3px;align-items:center}
+.ms-sq{width:14px;height:14px;border-radius:2px;background:var(--paper3);border:1px solid #2a2a22}
+.ms-sq.s1{background:#2a4a14;border-color:#3a6a1e}
+.ms-sq.s2{background:#3a6a1e;border-color:#5a9a30}
+.ms-sq.s3{background:#5a9a30;border-color:#7ec850}
+.ms-sq.s4{background:#7ec850;border-color:#a0e870}
+
+/* actions */
+.actions{display:flex;gap:8px}
+.ab{flex:1;font-family:var(--font-hand);font-size:1.05rem;padding:9px 0;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.ab:hover{background:var(--paper3);color:var(--ink)}
+.ab.pri{background:var(--paper3)}
+.ab.active-btn{background:var(--green-bg);color:var(--green);border-color:var(--green-dim)}
+.ab.dng:hover{background:var(--red-bg);color:var(--red);border-color:#4a1a1a}
+
+/* streak section */
+.streak-section{margin-top:2rem;background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.streak-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:6px}
+.streak-title{font-size:1.4rem;font-weight:600;color:var(--ink)}
+.streak-sub{font-size:0.95rem;color:var(--ink3);font-style:italic}
+.streak-wrap{display:flex;gap:7px;align-items:flex-start}
+.day-labels{display:flex;flex-direction:column;gap:3px;padding-top:17px}
+.day-label{height:14px;font-family:var(--font-mono);font-size:0.72rem;color:var(--ink3);line-height:14px}
+.streak-right{flex:1;overflow:hidden}
+.month-labels{display:flex;gap:3px;margin-bottom:3px;height:14px}
+.month-label{font-family:var(--font-mono);font-size:0.72rem;color:var(--ink3);line-height:14px}
+.streak-grid{display:flex;gap:3px}
+.streak-col{display:flex;flex-direction:column;gap:3px}
+.sc{width:14px;height:14px;border-radius:2px;background:#1a1a14;border:1px solid #282820}
+.sc.s1{background:#1a3010;border-color:#2a4a1a}
+.sc.s2{background:#2a4a1a;border-color:#3a6a24}
+.sc.s3{background:#4a8028;border-color:#6aaa38}
+.sc.s4{background:#7ec850;border-color:#a0e060}
+.streak-legend{display:flex;align-items:center;gap:6px;margin-top:10px}
+.sl-txt{font-family:var(--font-mono);font-size:0.75rem;color:var(--ink3)}
+.sl-cells{display:flex;gap:3px}
+
+/* export / import row */
+.io-row{display:flex;gap:10px;margin-top:1rem}
+.io-row .export-btn,.io-row .import-btn{margin-top:0;flex:1}
+
+/* export */
+.export-btn{width:100%;font-family:var(--font-hand);font-size:1.1rem;padding:12px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.export-btn:hover{color:var(--blue);border-color:#1a3a5a;background:var(--blue-bg)}
+
+/* import */
+.import-btn{width:100%;font-family:var(--font-hand);font-size:1.1rem;padding:12px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.import-btn:hover{color:var(--green);border-color:var(--green-dim);background:var(--green-bg)}
+
+/* modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--paper2);border:1px solid #3a3a2e;border-radius:12px;padding:1.8rem;width:100%;max-width:440px}
+.modal h2{font-size:1.9rem;font-weight:700;color:var(--ink);margin-bottom:1.2rem}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:0.95rem;color:var(--ink3);font-family:var(--font-mono)}
+.field input,.field textarea,.field select{font-family:var(--font-hand);font-size:1.1rem;border:1px solid var(--line);border-radius:6px;padding:9px 14px;background:var(--paper3);color:var(--ink);outline:none;transition:border .15s;resize:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:var(--paper2)}
+.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:8px}
+.modal-actions button{font-family:var(--font-hand);font-size:1.1rem;padding:9px 22px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink2);cursor:pointer;transition:all .15s}
+.modal-actions button.ok{background:var(--accent);color:#0a1a04;border-color:var(--accent);font-weight:600}
+.modal-actions button:hover:not(.ok){background:var(--paper3)}
+
+/* empty state */
+.empty{text-align:center;padding:3rem 0;color:var(--ink3);font-size:1.2rem;font-style:italic;line-height:1.7}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--paper)}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+
+/* Hide side decorations on narrow screens */
+@media(max-width:1100px){
+  .side-deco,.v-rule,.tick-marks,.side-label,.glyph,.side-bars,.side-arc,.corner-dots{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LEFT SIDE DECORATION -->
+<div class="v-rule left"></div>
+<div class="tick-marks left" id="ticks-left"></div>
+<div class="side-label left">// project journal · v1 · active tracking</div>
+
+<svg class="side-arc left" style="width:60px;height:60px" viewBox="0 0 60 60">
+  <circle cx="30" cy="30" r="26" fill="none" stroke="#2e2e26" stroke-width="1.5"/>
+  <circle cx="30" cy="30" r="26" fill="none" stroke="#7ec850" stroke-width="1.5"
+    stroke-dasharray="100 64" stroke-dashoffset="0" stroke-linecap="round" opacity="0.5"/>
+  <circle cx="30" cy="30" r="4" fill="#7ec850" opacity="0.4"/>
+</svg>
+
+<div class="side-bars left" id="bars-left"></div>
+
+<div class="glyph" style="left:calc((100vw - 960px)/2 - 80px);top:320px">01</div>
+<div class="glyph" style="left:calc((100vw - 960px)/2 - 75px);top:370px">10</div>
+<div class="glyph" style="left:calc((100vw - 960px)/2 - 80px);top:420px">11</div>
+<div class="glyph" style="left:calc((100vw - 960px)/2 - 70px);top:470px">00</div>
+<div class="glyph" style="left:calc((100vw - 960px)/2 - 78px);top:520px">01</div>
+
+<!-- RIGHT SIDE DECORATION -->
+<div class="v-rule right"></div>
+<div class="tick-marks right" id="ticks-right"></div>
+<div class="side-label right">work · personal · freelance · other ·</div>
+
+<svg class="side-arc right" style="width:60px;height:60px" viewBox="0 0 60 60">
+  <rect x="8" y="8" width="44" height="44" rx="4" fill="none" stroke="#2e2e26" stroke-width="1.5"/>
+  <rect x="8" y="8" width="44" height="44" rx="4" fill="none" stroke="#5a9ee0" stroke-width="1.5"
+    stroke-dasharray="75 101" stroke-dashoffset="0" opacity="0.4"/>
+  <circle cx="30" cy="30" r="3" fill="#5a9ee0" opacity="0.4"/>
+</svg>
+
+<div class="side-bars right" id="bars-right"></div>
+
+<div class="glyph" style="right:calc((100vw - 960px)/2 - 78px);top:330px">◇</div>
+<div class="glyph" style="right:calc((100vw - 960px)/2 - 72px);top:380px">◆</div>
+<div class="glyph" style="right:calc((100vw - 960px)/2 - 78px);top:430px">○</div>
+<div class="glyph" style="right:calc((100vw - 960px)/2 - 72px);top:480px">●</div>
+<div class="glyph" style="right:calc((100vw - 960px)/2 - 78px);top:530px">◇</div>
+
+<!-- Corner decorations -->
+<svg class="corner-dots tl" viewBox="0 0 80 80">
+  <g fill="#2e2e26">
+    <circle cx="10" cy="10" r="2"/><circle cx="20" cy="10" r="2"/><circle cx="30" cy="10" r="2"/>
+    <circle cx="10" cy="20" r="2"/><circle cx="20" cy="20" r="2"/>
+    <circle cx="10" cy="30" r="2"/>
+  </g>
+</svg>
+<svg class="corner-dots tr" viewBox="0 0 80 80">
+  <g fill="#2e2e26">
+    <circle cx="70" cy="10" r="2"/><circle cx="60" cy="10" r="2"/><circle cx="50" cy="10" r="2"/>
+    <circle cx="70" cy="20" r="2"/><circle cx="60" cy="20" r="2"/>
+    <circle cx="70" cy="30" r="2"/>
+  </g>
+</svg>
+<svg class="corner-dots bl" viewBox="0 0 80 80">
+  <g fill="#2e2e26">
+    <circle cx="10" cy="70" r="2"/><circle cx="20" cy="70" r="2"/><circle cx="30" cy="70" r="2"/>
+    <circle cx="10" cy="60" r="2"/><circle cx="20" cy="60" r="2"/>
+    <circle cx="10" cy="50" r="2"/>
+  </g>
+</svg>
+<svg class="corner-dots br" viewBox="0 0 80 80">
+  <g fill="#2e2e26">
+    <circle cx="70" cy="70" r="2"/><circle cx="60" cy="70" r="2"/><circle cx="50" cy="70" r="2"/>
+    <circle cx="70" cy="60" r="2"/><circle cx="60" cy="60" r="2"/>
+    <circle cx="70" cy="50" r="2"/>
+  </g>
+</svg>
+
+<!-- MAIN CONTENT -->
+<div class="notebook">
+<div class="page">
+
+<div class="header">
+  <div class="header-top">
+    <h1>project journal</h1>
+    <span class="header-date" id="hdr-date"></span>
+  </div>
+  <div class="header-sub">a quiet place for all my work</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-v" id="s-total">0</div><div class="stat-l">projects</div></div>
+  <div class="stat"><div class="stat-v" id="s-active">0</div><div class="stat-l">active</div></div>
+  <div class="stat"><div class="stat-v" id="s-streak">0</div><div class="stat-l">day streak</div></div>
+  <div class="stat"><div class="stat-v" id="s-time">0h 0m</div><div class="stat-l">total time</div></div>
+</div>
+
+<div class="filters">
+  <button class="ftag on" onclick="setFilter('all',this)">all</button>
+  <button class="ftag" onclick="setFilter('active',this)">active</button>
+  <button class="ftag" onclick="setFilter('pinned',this)">pinned</button>
+  <button class="ftag" onclick="setFilter('work',this)">work</button>
+  <button class="ftag" onclick="setFilter('personal',this)">personal</button>
+  <button class="ftag" onclick="setFilter('freelance',this)">freelance</button>
+  <button class="ftag" onclick="setFilter('other',this)">other</button>
+</div>
+
+<button class="add-btn" onclick="openModal()">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  new project
+</button>
+
+<div class="cards" id="cards"></div>
+
+<div class="streak-section">
+  <div class="streak-head">
+    <span class="streak-title">activity streak</span>
+    <span class="streak-sub" id="streak-sub">start logging to build a streak</span>
+  </div>
+  <div class="streak-wrap">
+    <div class="day-labels" id="day-labels"></div>
+    <div class="streak-right">
+      <div class="month-labels" id="month-labels"></div>
+      <div class="streak-grid" id="streak-grid"></div>
+    </div>
+  </div>
+  <div class="streak-legend">
+    <span class="sl-txt">less</span>
+    <div class="sl-cells">
+      <div class="sc"></div>
+      <div class="sc s1"></div>
+      <div class="sc s2"></div>
+      <div class="sc s3"></div>
+      <div class="sc s4"></div>
+    </div>
+    <span class="sl-txt">more</span>
+  </div>
+</div>
+
+<div class="io-row">
+  <button class="export-btn" onclick="exportData()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    export journal as json
+  </button>
+  <button class="import-btn" onclick="document.getElementById('import-input').click()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    import from json
+  </button>
+  <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)"/>
+</div>
+<div id="import-status" style="display:none;font-family:var(--font-mono);font-size:0.85rem;text-align:center;padding:8px;border-radius:6px;margin-top:8px"></div>
+
+</div>
+</div>
+
+<div class="modal-overlay" id="timer-modal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h2>change reset timer</h2>
+    <p style="font-size:1rem;color:var(--ink3);margin-bottom:1.2rem;line-height:1.5">The session timer will auto-reset after this duration. Use this to track work sprints — hours for focused sessions, days or weeks for longer project phases.</p>
+    <div class="field">
+      <label>auto-reset after</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="tm-val" type="number" min="1" max="999" value="5" style="width:80px;flex-shrink:0"/>
+        <select id="tm-unit" style="flex:1">
+          <option value="hours">hours</option>
+          <option value="days">days</option>
+          <option value="weeks">weeks</option>
+          <option value="never">never (manual only)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeTimerModal()">cancel</button>
+      <button class="ok" onclick="saveTimerModal()">save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h2>new project</h2>
+    <div class="field"><label>name *</label><input id="f-name" placeholder="e.g. portfolio redesign"/></div>
+    <div class="field"><label>description</label><textarea id="f-desc" rows="2" placeholder="a line about this project"></textarea></div>
+    <div class="field"><label>account / email</label><input id="f-email" placeholder="work@email.com"/></div>
+    <div class="field"><label>repository url</label><input id="f-repo" placeholder="https://github.com/..."/></div>
+    <div class="field"><label>tag</label>
+      <select id="f-tag">
+        <option value="other">other</option>
+        <option value="work">work</option>
+        <option value="personal">personal</option>
+        <option value="freelance">freelance</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>session auto-reset after</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="f-reset-val" type="number" min="1" max="999" value="5" style="width:80px;flex-shrink:0"/>
+        <select id="f-reset-unit" style="flex:1">
+          <option value="hours">hours</option>
+          <option value="days">days</option>
+          <option value="weeks">weeks</option>
+          <option value="never">never (manual only)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeModal()">cancel</button>
+      <button class="ok" onclick="saveProject()">add project</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── side decoration helpers ─── */
+function buildTicks(id, count){
+  const el=document.getElementById(id); if(!el) return;
+  for(let i=0;i<count;i++){
+    const isLong=(i%5===0);
+    const d=document.createElement('div');
+    d.className='tick'+(isLong?' long':'');
+    el.appendChild(d);
+    if(isLong){
+      const n=document.createElement('div');
+      n.className='tick-num';
+      n.textContent=String(i).padStart(2,'0');
+      el.appendChild(n);
+    }
+  }
+}
+buildTicks('ticks-left',30);
+buildTicks('ticks-right',30);
+
+function buildBars(id){
+  const el=document.getElementById(id); if(!el) return;
+  const widths=[22,14,32,18,28,12,26,20,16,30];
+  widths.forEach(w=>{
+    const b=document.createElement('div');
+    b.className='sbar';
+    b.style.width=w+'px';
+    el.appendChild(b);
+  });
+}
+buildBars('bars-left');
+buildBars('bars-right');
+
+/* ─── app logic ─── */
+// Reset duration is now per-project (p.resetMs)
+let projects = [];
+let activityLog = {};
+
+try { projects = JSON.parse(localStorage.getItem('pj_projects') || '[]'); } catch(e){ projects=[]; }
+try { activityLog = JSON.parse(localStorage.getItem('pj_activity') || '{}'); } catch(e){ activityLog={}; }
+
+let filter = 'all';
+
+function save(){
+  try{
+    localStorage.setItem('pj_projects', JSON.stringify(projects));
+    localStorage.setItem('pj_activity', JSON.stringify(activityLog));
+  } catch(e){}
+}
+
+function fmt(ms){
+  const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;
+  if(h>0) return h+'h '+String(m).padStart(2,'0')+'m';
+  return m+'m '+String(sc).padStart(2,'0')+'s';
+}
+function fmtDate(ts){
+  if(!ts) return 'never';
+  const diff=Math.floor((Date.now()-ts)/60000);
+  if(diff<1) return 'just now';
+  if(diff<60) return diff+'m ago';
+  if(diff<1440) return Math.floor(diff/60)+'h ago';
+  return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+}
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+function logActivity(ms){
+  const k=todayKey();
+  activityLog[k]=(activityLog[k]||0)+ms;
+  save();
+}
+function getLiveSession(p){ return p.status==='active'&&p.sessionStart?p.sessionMs+(Date.now()-p.sessionStart):p.sessionMs; }
+function getLiveTotal(p){ return p.status==='active'&&p.sessionStart?p.totalMs+(Date.now()-p.sessionStart):p.totalMs; }
+function repoName(url){
+  if(!url) return null;
+  try{ const p=new URL(url).pathname.replace(/^\//,'').replace(/\/$/,''); return p||url; }
+  catch(e){ return url.length>28?url.slice(0,28)+'…':url; }
+}
+function calcStreak(){
+  let streak=0,d=new Date(); d.setHours(0,0,0,0);
+  for(let i=0;i<365;i++){
+    const k=d.toISOString().slice(0,10);
+    if(activityLog[k]&&activityLog[k]>0) streak++;
+    else if(i>0) break;
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+function levelFor(ms){
+  if(!ms||ms===0) return 0;
+  if(ms<1800000) return 1;
+  if(ms<3600000) return 2;
+  if(ms<7200000) return 3;
+  return 4;
+}
+
+function setDateHeader(){
+  document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'}).toLowerCase();
+}
+setDateHeader();
+
+function openModal(){
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('f-name').focus(),60);
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  ['f-name','f-desc','f-email','f-repo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-tag').value='other';
+  document.getElementById('f-reset-val').value='5';
+  document.getElementById('f-reset-unit').value='hours';
+}
+function saveProject(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){ document.getElementById('f-name').focus(); return; }
+  const resetVal=parseInt(document.getElementById('f-reset-val').value)||5;
+  const resetUnit=document.getElementById('f-reset-unit').value;
+  let resetMs=null;
+  if(resetUnit==='hours') resetMs=resetVal*3600000;
+  else if(resetUnit==='days') resetMs=resetVal*86400000;
+  else if(resetUnit==='weeks') resetMs=resetVal*7*86400000;
+  projects.push({
+    id:Date.now(), name,
+    desc:document.getElementById('f-desc').value.trim(),
+    email:document.getElementById('f-email').value.trim(),
+    repo:document.getElementById('f-repo').value.trim(),
+    tag:document.getElementById('f-tag').value,
+    resetMs, resetVal, resetUnit,
+    status:'idle', lastTouched:null,
+    sessionStart:null, sessionMs:0, totalMs:0,
+    sessionResetAt:null, pinned:false, note:''
+  });
+  save(); closeModal(); render();
+}
+
+function toggleSession(id){
+  const p=projects.find(x=>x.id===id); if(!p) return;
+  if(p.status==='active'){
+    const e=Date.now()-p.sessionStart;
+    p.sessionMs+=e; p.totalMs+=e; logActivity(e);
+    p.sessionStart=null; p.status='paused'; p.lastTouched=Date.now();
+  } else {
+    p.status='active'; p.sessionStart=Date.now(); p.lastTouched=Date.now();
+    if(!p.sessionResetAt && p.resetMs) p.sessionResetAt=Date.now()+p.resetMs;
+  }
+  save(); render();
+}
+function resetSession(id){
+  const p=projects.find(x=>x.id===id); if(!p) return;
+  if(p.status==='active'){ logActivity(Date.now()-p.sessionStart); p.totalMs+=(Date.now()-p.sessionStart); p.sessionStart=null; }
+  p.sessionMs=0; p.status='idle'; p.sessionResetAt=null; p.lastTouched=Date.now();
+  save(); render();
+}
+function togglePin(id){ const p=projects.find(x=>x.id===id); if(p){ p.pinned=!p.pinned; save(); render(); } }
+function deleteProject(id){ if(!confirm('delete this project?')) return; projects=projects.filter(x=>x.id!==id); save(); render(); }
+function setFilter(f,el){ filter=f; document.querySelectorAll('.ftag').forEach(b=>b.classList.remove('on')); el.classList.add('on'); render(); }
+function editNote(id){
+  const p=projects.find(x=>x.id===id); if(!p) return;
+  const nb=document.getElementById('note-'+id);
+  nb.classList.remove('empty');
+  nb.innerHTML='<textarea rows="2">'+( p.note||'')+'</textarea>';
+  const ta=nb.querySelector('textarea'); ta.focus();
+  ta.onblur=()=>{ p.note=ta.value.trim(); save(); render(); };
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),projects,activityLog},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='project-journal-'+todayKey()+'.json'; a.click();
+}
+function importData(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const status=document.getElementById('import-status');
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!data.projects||!Array.isArray(data.projects)) throw new Error('invalid format');
+      if(!confirm('This will REPLACE your current journal with the imported data. Continue?')){
+        e.target.value=''; return;
+      }
+      projects=data.projects;
+      activityLog=data.activityLog||{};
+      /* reset any active sessions — can't resume after import */
+      projects.forEach(p=>{ if(p.status==='active'){ p.status='paused'; p.sessionStart=null; } });
+      save(); render();
+      status.style.display='block';
+      status.style.background='var(--green-bg)';
+      status.style.color='var(--green)';
+      status.style.border='1px solid var(--green-dim)';
+      status.textContent='✓ imported '+projects.length+' project'+(projects.length!==1?'s':'')+' successfully';
+      setTimeout(()=>{ status.style.display='none'; },4000);
+    } catch(err){
+      status.style.display='block';
+      status.style.background='var(--red-bg)';
+      status.style.color='var(--red)';
+      status.style.border='1px solid #4a1a1a';
+      status.textContent='✗ could not read file — make sure it\'s a valid project journal export';
+      setTimeout(()=>{ status.style.display='none'; },5000);
+    }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function fmtLong(ms){
+  if(!ms||ms===0) return '0h 0m';
+  const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
+  const d=Math.floor(h/24),wk=Math.floor(d/7);
+  if(wk>=1){ const rd=d%7; return wk+'w'+(rd?' '+rd+'d':'')+(h%24?' '+(h%24)+'h':''); }
+  if(d>=1){ return d+'d '+(h%24)+'h '+String(m).padStart(2,'0')+'m'; }
+  return h+'h '+String(m).padStart(2,'0')+'m';
+}
+function fmtReset(val,unit){
+  if(!val||!unit||unit==='never') return 'manual only';
+  return 'every '+val+' '+unit;
+}
+function fmtCountdown(minutes){
+  if(minutes<60) return minutes+'m';
+  const h=Math.floor(minutes/60),m=minutes%60;
+  if(h<24) return h+'h'+(m?' '+m+'m':'');
+  const d=Math.floor(h/24); return d+'d '+(h%24)+'h';
+}
+
+let timerModalId=null;
+function openTimerModal(id){
+  timerModalId=id;
+  const p=projects.find(x=>x.id===id); if(!p) return;
+  document.getElementById('tm-val').value=p.resetVal||5;
+  document.getElementById('tm-unit').value=p.resetUnit||'hours';
+  document.getElementById('timer-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('tm-val').focus(),60);
+}
+function closeTimerModal(){
+  document.getElementById('timer-modal').classList.remove('open');
+  timerModalId=null;
+}
+function saveTimerModal(){
+  const p=projects.find(x=>x.id===timerModalId); if(!p) return;
+  const val=parseInt(document.getElementById('tm-val').value)||5;
+  const unit=document.getElementById('tm-unit').value;
+  p.resetVal=val; p.resetUnit=unit;
+  if(unit==='never') p.resetMs=null;
+  else if(unit==='hours') p.resetMs=val*3600000;
+  else if(unit==='days') p.resetMs=val*86400000;
+  else if(unit==='weeks') p.resetMs=val*7*86400000;
+  // recalc sessionResetAt if currently active
+  if(p.status==='active'&&p.sessionStart){
+    p.sessionResetAt=p.resetMs?p.sessionStart+p.resetMs:null;
+  }
+  save(); closeTimerModal(); render();
+}
+
+function renderStreak(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  // Start from Dec 1 of last year (or this year if current month is in range)
+  const startYear = now.getMonth() >= 11 ? now.getFullYear() : now.getFullYear()-1;
+  const startD = new Date(startYear, 11, 1); // Dec 1
+  // Align startD back to Sunday
+  startD.setDate(startD.getDate() - startD.getDay());
+  // Build all weeks from startD to the end of the current week (Saturday)
+  const endD = new Date(now);
+  endD.setDate(endD.getDate() + (6 - endD.getDay()));
+  const cols=[];
+  let cur = new Date(startD);
+  while(cur <= endD){
+    const col=[];
+    for(let d=0;d<7;d++){
+      const dt=new Date(cur); dt.setDate(dt.getDate()+d);
+      const k=dt.toISOString().slice(0,10);
+      col.push({k,lv:levelFor(activityLog[k]||0),dt});
+    }
+    cols.push(col);
+    cur.setDate(cur.getDate()+7);
+  }
+  const mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let mHtml=''; let lastM=-1;
+  cols.forEach(col=>{
+    const m=col[0].dt.getMonth();
+    if(m!==lastM){ mHtml+=`<div class="month-label" style="width:17px">${mNames[m]}</div>`; lastM=m; }
+    else mHtml+='<div class="month-label" style="width:17px"></div>';
+  });
+  document.getElementById('month-labels').innerHTML=mHtml;
+  document.getElementById('day-labels').innerHTML=['','Mon','','Wed','','Fri',''].map(l=>`<div class="day-label">${l}</div>`).join('');
+  document.getElementById('streak-grid').innerHTML=cols.map(col=>
+    `<div class="streak-col">${col.map(c=>
+      `<div class="sc${c.lv?' s'+c.lv:''}" title="${c.k}${activityLog[c.k]?': '+fmt(activityLog[c.k]):''}"></div>`
+    ).join('')}</div>`
+  ).join('');
+  const streak=calcStreak();
+  document.getElementById('s-streak').textContent=streak;
+  document.getElementById('streak-sub').textContent=streak>0?streak+' day'+(streak>1?'s':'')+' in a row 🔥':'start logging to build a streak';
+}
+
+function render(){
+  const sorted=[...projects].sort((a,b)=>(b.pinned-a.pinned)||((b.lastTouched||0)-(a.lastTouched||0)));
+  const visible=sorted.filter(p=>{
+    if(filter==='all') return true;
+    if(filter==='active') return p.status==='active';
+    if(filter==='pinned') return p.pinned;
+    return p.tag===filter;
+  });
+  const c=document.getElementById('cards');
+  if(visible.length===0){
+    c.innerHTML=`<div class="empty">${projects.length===0?'no projects yet —<br>add your first one above':'no projects match this filter'}</div>`;
+  } else {
+    c.innerHTML=visible.map(p=>{
+      const ses=getLiveSession(p),tot=getLiveTotal(p);
+      const tl=p.sessionResetAt?Math.max(0,Math.round((p.sessionResetAt-Date.now())/60000)):null;
+      const rn=repoName(p.repo);
+      const tagCls={work:'t-work',personal:'t-personal',freelance:'t-freelance',other:'t-other'}[p.tag]||'t-other';
+      const bCls=p.status==='active'?'b-active':p.status==='paused'?'b-paused':'b-idle';
+      const mini7=Array.from({length:7},(_,i)=>{
+        const d=new Date(); d.setDate(d.getDate()-6+i);
+        const k=d.toISOString().slice(0,10);
+        return `<div class="ms-sq${levelFor(activityLog[k]||0)?' s'+levelFor(activityLog[k]||0):''}" title="${k}"></div>`;
+      }).join('');
+      return `<div class="card${p.pinned?' pinned':''}" id="card-${p.id}">
+<div class="card-top">
+  <div class="card-name">${p.pinned?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ec850" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>':''}<span>${p.name}</span></div>
+  <div class="badge-row"><span class="badge ${bCls}">${p.status}</span><span class="badge tag-pill ${tagCls}">${p.tag}</span></div>
+</div>
+${p.desc?`<div class="card-desc">${p.desc}</div>`:''}
+<div class="meta">
+  ${p.email?`<div class="mi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${p.email}</div>`:''}
+  ${rn?`<div class="mi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg><a href="${p.repo}" target="_blank">${rn}</a></div>`:''}
+  <div class="mi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>last touched: ${fmtDate(p.lastTouched)}</div>
+</div>
+<div class="note-area${p.note?'':' empty'}" id="note-${p.id}" onclick="editNote(${p.id})">${p.note||'click to jot a note…'}</div>
+
+<div class="timer-block">
+  <div class="timer-row"><span class="t-label">session</span><span class="t-val${p.status==='active'?' live':''}" id="ses-${p.id}">${fmt(ses)}</span></div>
+  <div class="timer-row"><span class="t-label">total time</span><span class="t-val" id="tot-${p.id}">${fmtLong(tot)}</span></div>
+  ${p.resetMs?`<div class="timer-row"><span class="t-label reset-note">auto-reset</span><span class="t-val reset-note">${fmtReset(p.resetVal,p.resetUnit)}</span></div>`:'<div class="timer-row"><span class="t-label reset-note">auto-reset</span><span class="t-val reset-note">manual only</span></div>'}
+  ${tl!==null?`<div class="timer-row"><span class="t-label reset-note" style="color:var(--amber)">resets in</span><span class="t-val reset-note" style="color:var(--amber)">${fmtCountdown(tl)}</span></div>`:''}
+  <div class="timer-row"><span class="t-label">last 7 days</span><div class="mini-streak">${mini7}</div></div>
+</div>
+<button class="ab" style="width:100%;margin-bottom:10px;font-size:0.9rem;padding:6px" onclick="openTimerModal(${p.id})">⏱ change reset timer</button>
+
+<div class="actions">
+  <button class="ab pri${p.status==='active'?' active-btn':''}" onclick="toggleSession(${p.id})">${p.status==='active'?'⏸ pause':'▶ start'}</button>
+  <button class="ab" onclick="resetSession(${p.id})">↺ reset</button>
+  <button class="ab" onclick="togglePin(${p.id})">${p.pinned?'✕ unpin':'📌 pin'}</button>
+  <button class="ab dng" onclick="deleteProject(${p.id})">✕ delete</button>
+</div>
+</div>`;
+    }).join('');
+  }
+  const active=projects.filter(p=>p.status==='active').length;
+  const total=projects.reduce((a,p)=>a+getLiveTotal(p),0);
+  document.getElementById('s-total').textContent=projects.length;
+  document.getElementById('s-active').textContent=active;
+  document.getElementById('s-time').textContent=Math.floor(total/3600000)+'h '+Math.floor((total%3600000)/60000)+'m';
+  renderStreak();
+}
+
+function tick(){
+  let changed=false;
+  projects.forEach(p=>{
+    if(p.sessionResetAt&&Date.now()>=p.sessionResetAt){
+      if(p.status==='active'){ logActivity(Date.now()-p.sessionStart); p.totalMs+=(Date.now()-p.sessionStart); p.sessionStart=null; }
+      p.sessionMs=0; p.status='idle'; p.sessionResetAt=null; changed=true;
+    }
+  });
+  if(changed){ save(); render(); return; }
+  projects.forEach(p=>{
+    if(p.status!=='active') return;
+    const se=document.getElementById('ses-'+p.id),te=document.getElementById('tot-'+p.id);
+    if(se) se.textContent=fmt(getLiveSession(p));
+    if(te) te.textContent=fmt(getLiveTotal(p));
+  });
+  const total=projects.reduce((a,p)=>a+getLiveTotal(p),0);
+  document.getElementById('s-time').textContent=Math.floor(total/3600000)+'h '+Math.floor((total%3600000)/60000)+'m';
+}
+
+render();
+setInterval(tick,1000);
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('timer-modal').addEventListener('click',function(e){if(e.target===this)closeTimerModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeTimerModal();}});
+</script>
+</body>
+</html>

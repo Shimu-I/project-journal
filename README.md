@@ -1,5 +1,6 @@
 ![Visitor Count](https://visitor-badge.laobi.icu/badge?page_id=shimu-i/project-journal)
 
+![alt text](image.png)
 
 # project journal
 
@@ -35,14 +36,15 @@ every card has a live timer so you know exactly how long you've worked:
 
 - **start / pause** — one click to begin or pause a session
 - **reset** — clears the current session without losing your total time
-- **auto-reset after 5 hours** — if you forget to stop a session, it resets automatically so your data stays clean. a countdown shows how much time is left before the reset
-- **total time** — all-time cumulative time logged on the project, survives resets and browser closes
+- **custom auto-reset** — set how long before the session resets automatically. choose from hours, days, or weeks (e.g. "every 5 hours", "every 3 days", "every 1 week"). if you forget to stop a session, the auto-reset keeps your data clean. a countdown in amber shows exactly when the next reset fires. set to "never" for manual-only control
+- **change reset timer** — each card has a ⏱ button so you can update the reset duration at any time without recreating the project
+- **total time** — all-time cumulative time logged on the project, displayed in a human-readable format (e.g. `2w 3d`, `4d 6h`, `12h 30m`). survives resets and browser closes
 
 ### activity streak
-a 16-week contribution grid sits at the bottom of the page, like GitHub's contribution graph:
+a full-year contribution grid sits at the bottom of the page, like GitHub's contribution graph:
 
-- one cell per day, 112 cells total
-- colour intensity based on how much time you logged that day
+- spans from **december 1st of the previous year** all the way to today — giving you a complete year+ view of your activity
+- one cell per day, colour intensity based on how much time you logged that day
   - empty — no activity
   - light green — under 30 minutes
   - medium green — 30 to 60 minutes
@@ -68,8 +70,9 @@ four numbers always visible at the top:
 - current day streak
 - total time logged across all projects
 
-### export
-click "export journal as json" at the bottom to download a full backup of your data — all projects, all timers, the full activity log — as a timestamped `.json` file.
+### export & import
+- click **export journal as json** to download a full backup — all projects, all timers, the full activity log — as a timestamped `.json` file
+- click **import from json** to restore a previously exported backup. this replaces your current data with the imported file, so you can pick up exactly where you left off after reopening the html file
 
 ---
 
@@ -81,7 +84,9 @@ project journal is built with plain HTML, CSS, and JavaScript. there is no frame
 
 **timers** — when you start a session, the app records the start timestamp. when you pause, it calculates elapsed time and adds it to your session and total counters. the streak grid is updated at the same time. a 1-second interval ticks the live timers without re-rendering the whole page.
 
-**streak grid** — every day you log time, the app writes the total ms to a date-keyed log (`pj_activity`). the grid reads from this log to colour each cell. the streak counter walks backwards from today counting consecutive days with any logged activity.
+**auto-reset** — each project stores its own reset duration in milliseconds. when a session starts, the app calculates the exact timestamp when the reset should fire. the tick loop checks this every second. if the reset time has passed, the session is closed and logged automatically.
+
+**streak grid** — every day you log time, the app writes the total ms to a date-keyed log (`pj_activity`). the grid reads from this log to colour each cell, starting from december 1st of last year. the streak counter walks backwards from today counting consecutive days with any logged activity.
 
 ---
 
@@ -100,6 +105,7 @@ project journal is built with plain HTML, CSS, and JavaScript. there is no frame
    - `account / email` — the email or account associated with this project
    - `repository url` — paste your GitHub or other repo link
    - `tag` — pick work, personal, freelance, or other
+   - `session auto-reset after` — pick a number and unit (hours / days / weeks), or "never" for manual-only
 3. click **add project** — the card appears immediately
 
 ### tracking time on a project
@@ -108,7 +114,8 @@ project journal is built with plain HTML, CSS, and JavaScript. there is no frame
 3. the session timer starts counting live
 4. click **⏸ pause** when you take a break or switch to something else
 5. click **↺ reset** to zero out the current session (total time is kept)
-6. the auto-reset fires after 5 hours — a countdown on the card shows when
+6. the auto-reset fires after your chosen duration — a countdown in amber on the card shows when
+7. click **⏱ change reset timer** on any card to update the duration without deleting the project
 
 ### writing a note
 1. click anywhere on the dashed note area inside a card
@@ -129,16 +136,18 @@ click any of the filter buttons below the stats bar:
 - **work / personal / freelance / other** — filter by tag
 
 ### reading the streak grid
-- the grid shows the last 16 weeks of activity
+- the grid spans from december 1st of last year to today
 - darker green = more time logged that day
 - hover over any cell to see the exact date and time logged
 - the streak counter in the stats bar shows your current consecutive-day streak
 
-### exporting your data
+### exporting and importing your data
 1. scroll to the bottom of the page
-2. click **export journal as json**
-3. a file named `project-journal-YYYY-MM-DD.json` downloads to your computer
-4. keep this as a backup — it contains all your projects and your full activity history
+2. click **export journal as json** — a file named `project-journal-YYYY-MM-DD.json` downloads to your computer
+3. to restore: click **import from json**, pick your backup file, and confirm
+4. all your projects, timers, and activity history will be restored exactly as they were
+
+> **important:** localStorage is tied to a specific browser and file path. if you move the html file, open it in a different browser, or clear your browser data, your saved data may not appear. always export before closing and import when you reopen — treat the json file as your real save file and the html as the app that reads it.
 
 ### deleting a project
 click the **✕** button (far right in the card actions row) to delete a project. you will be asked to confirm before it is removed.
@@ -147,10 +156,11 @@ click the **✕** button (far right in the card actions row) to delete a project
 
 ## tips
 
-- **write the note before you close** — before pausing a session, jot one line in the note field so you know exactly where to pick up next time
+- **export before closing** — always click export before closing the file. when you reopen it, click import to restore your data. this is your save/load workflow
+- **write the note before you pause** — before pausing a session, jot one line in the note field so you know exactly where to pick up next time
 - **pin your focus projects** — keep 2–3 pinned at the top so the most important work is always visible
-- **let the auto-reset protect you** — if you forget to pause, the 5-hour auto-reset keeps your data honest
-- **back up weekly** — export your JSON every week or two and drop it in a safe folder
+- **set the reset timer to match your workflow** — use hours for focused daily sprints, days for slower-burn tasks, weeks for long-running background projects
+- **back up weekly** — export your JSON every week and drop it in a safe folder
 - **the streak only counts logged time** — just opening the file does not add to your streak. you have to start and pause at least one session
 
 ---
@@ -161,7 +171,6 @@ these are planned features that are not yet built:
 
 | feature | description |
 |---|---|
-| import / restore | re-load a previously exported JSON backup |
 | dark mode | toggle between light paper and dark ink themes |
 | drag to reorder | manually sort cards by dragging |
 | weekly summary | a digest of time spent per tag and per project |
@@ -178,7 +187,7 @@ these are planned features that are not yet built:
 
 all your data lives entirely on your own machine inside your browser's localStorage. nothing is sent anywhere. there is no account, no server, no analytics, no tracking of any kind.
 
-if you clear your browser's site data or localStorage, your project journal data will be lost — which is why the JSON export exists. use it regularly.
+if you clear your browser's site data or localStorage, your project journal data will be lost — which is why the JSON export exists. use it regularly, and use import to restore it when you reopen the file.
 
 ---
 
