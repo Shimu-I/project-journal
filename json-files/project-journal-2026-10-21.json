@@ -1,0 +1,25 @@
+{
+  "exportedAt": "2026-10-21T21:15:58.795Z",
+  "projects": [
+    {
+      "id": 1792617350418,
+      "name": "first",
+      "desc": "this is the project description",
+      "email": "wok@gmail.com",
+      "repo": "",
+      "tag": "other",
+      "resetMs": 18000000,
+      "resetVal": 5,
+      "resetUnit": "hours",
+      "status": "idle",
+      "lastTouched": null,
+      "sessionStart": null,
+      "sessionMs": 0,
+      "totalMs": 0,
+      "sessionResetAt": null,
+      "pinned": false,
+      "note": ""
+    }
+  ],
+  "activityLog": {}
+}
